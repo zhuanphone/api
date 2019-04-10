@@ -38,22 +38,30 @@ import User from '../../models/users'
  *       "error": "Unprocessable Entity"
  *     }
  */
-export async function createUser (ctx) {
-  const user = new User(ctx.request.body.user)
+export async function createUser(ctx) {
+  const user = new User(ctx.request.body)
   try {
     await user.save()
+
+    const token = user.generateToken()
+    const response = user.toJSON()
+
+    delete response.password
+
+    ctx.body = {
+      status: 201,
+      message: 'Create User Success!',
+      result: {
+        user: response,
+        token
+      }
+    }
   } catch (err) {
-    ctx.throw(422, err.message)
-  }
-
-  const token = user.generateToken()
-  const response = user.toJSON()
-
-  delete response.password
-
-  ctx.body = {
-    user: response,
-    token
+    ctx.status = 422
+    ctx.body = {
+      status: 422,
+      message: err.message
+    }
   }
 }
 
@@ -84,9 +92,33 @@ export async function createUser (ctx) {
  *
  * @apiUse TokenError
  */
-export async function getUsers (ctx) {
-  const users = await User.find({}, '-password')
-  ctx.body = { users }
+export async function getUsers(ctx) {
+  let { page, limit, keyword, sort } = ctx.request.query
+  page = Number(page) || 1
+  limit = Number(limit) || 10
+  sort = sort || '-created'
+
+  let query = {}
+  if (keyword) query['name'] = { $regex: keyword }
+
+  try {
+    const total = await User.count({})
+    const users = await User
+      .find(query)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort(sort)
+    ctx.body = {
+      status: 200,
+      result: { pagination: { total, limit }, list: users }
+    }
+  } catch (err) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: err.message
+    }
+  }
 }
 
 /**
@@ -116,7 +148,7 @@ export async function getUsers (ctx) {
  *
  * @apiUse TokenError
  */
-export async function getUser (ctx, next) {
+export async function getUser(ctx, next) {
   try {
     const user = await User.findById(ctx.params.id, '-password')
     if (!user) {
@@ -124,6 +156,7 @@ export async function getUser (ctx, next) {
     }
 
     ctx.body = {
+      status: 200,
       user
     }
   } catch (err) {
@@ -131,7 +164,11 @@ export async function getUser (ctx, next) {
       ctx.throw(404)
     }
 
-    ctx.throw(500)
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: err.message
+    }
   }
 
   if (next) { return next() }
@@ -177,16 +214,27 @@ export async function getUser (ctx, next) {
  *
  * @apiUse TokenError
  */
-export async function updateUser (ctx) {
+export async function updateUser(ctx) {
   const user = ctx.body.user
 
   Object.assign(user, ctx.request.body.user)
 
-  await user.save()
+  try {
 
-  ctx.body = {
-    user
+    await user.save()
+    ctx.body = {
+      status: 201,
+      user
+    }
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: error.message
+    }
   }
+
+
 }
 
 /**
@@ -210,13 +258,22 @@ export async function updateUser (ctx) {
  * @apiUse TokenError
  */
 
-export async function deleteUser (ctx) {
+export async function deleteUser(ctx) {
   const user = ctx.body.user
 
-  await user.remove()
+  try {
+    await user.remove()
 
-  ctx.status = 200
-  ctx.body = {
-    success: true
+    ctx.body = {
+      status: 200,
+      success: true
+    }
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: error.message
+    }
   }
+
 }

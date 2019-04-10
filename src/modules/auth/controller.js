@@ -1,4 +1,6 @@
 import passport from 'koa-passport'
+import qiniu from 'qiniu'
+import { qiniuUrl } from '../../utils/const';
 
 /**
  * @apiDefine TokenError
@@ -50,10 +52,15 @@ import passport from 'koa-passport'
  *     }
  */
 
-export async function authUser (ctx, next) {
+export async function login(ctx, next) {
   return passport.authenticate('local', (user) => {
     if (!user) {
-      ctx.throw(401)
+      ctx.status = 401
+      ctx.body = {
+        status: 401,
+        message: '该用户无效！'
+      }
+      return
     }
 
     const token = user.generateToken()
@@ -63,8 +70,37 @@ export async function authUser (ctx, next) {
     delete response.password
 
     ctx.body = {
-      token,
-      user: response
+      status: 200,
+      result: {
+        token,
+        user: response
+      }
     }
   })(ctx, next)
+}
+
+export async function regist(ctx, next) {
+  return
+}
+
+export function createQiniuToken(ctx) {
+  const accessKey = 'V9V8kOZnoE4jIadlzLfOuhfZ9IgxtBjNr3tQbf7B'
+  const secretKey = '0ZBLFa9uaCUXEfrpgcQPQM9tW-9Ij2R4peSaBNuY'
+  const mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
+
+  const options = {
+    scope: 'zhuanzhuan',
+    expires: 3153600
+  }
+
+  const putPolicy = new qiniu.rs.PutPolicy(options)
+  const uploadToken = putPolicy.uploadToken(mac)
+
+  ctx.body = {
+    status: 201,
+    result: {
+      token: uploadToken,
+      domain: qiniuUrl
+    }
+  }
 }

@@ -1,28 +1,29 @@
 import { ensureUser } from '../../middleware/validators'
-import * as user from './controller'
+import * as imgs from './controller'
 
-export const baseUrl = '/users'
+export const baseUrl = '/imgs'
 
 export default [
   {
     method: 'POST',
     route: '/create',
     handlers: [
-      user.createUser
+      ensureUser,
+      imgs.createImgs
     ]
   },
   {
     method: 'GET',
     route: '/list',
     handlers: [
-      user.getUsers
+      imgs.listImgs
     ]
   },
   {
     method: 'GET',
     route: '/read/:id',
     handlers: [
-      user.getUser
+      imgs.readImg
     ]
   },
   {
@@ -30,8 +31,16 @@ export default [
     route: '/update/:id',
     handlers: [
       ensureUser,
-      user.getUser,
-      user.updateUser
+      imgs.readImg,
+      imgs.updateImg
+    ]
+  },
+  {
+    method: 'POST',
+    route: '/update/multi',
+    handlers: [
+      ensureUser,
+      imgs.updateMultiImgs
     ]
   },
   {
@@ -39,8 +48,15 @@ export default [
     route: '/delete/:id',
     handlers: [
       ensureUser,
-      user.getUser,
-      user.deleteUser
+      imgs.deleteImg
+    ]
+  },
+  {
+    method: 'POST',
+    route: '/delete/multi',
+    handlers: [
+      ensureUser,
+      imgs.deleteMultiImgs
     ]
   }
 ]

@@ -1,28 +1,29 @@
 import { ensureUser } from '../../middleware/validators'
-import * as user from './controller'
+import * as commodities from './controller'
 
-export const baseUrl = '/users'
+export const baseUrl = '/commodities'
 
 export default [
   {
     method: 'POST',
     route: '/create',
     handlers: [
-      user.createUser
+      ensureUser,
+      commodities.createCommodity
     ]
   },
   {
     method: 'GET',
     route: '/list',
     handlers: [
-      user.getUsers
+      commodities.listCommodities
     ]
   },
   {
     method: 'GET',
     route: '/read/:id',
     handlers: [
-      user.getUser
+      commodities.readCommodity
     ]
   },
   {
@@ -30,8 +31,7 @@ export default [
     route: '/update/:id',
     handlers: [
       ensureUser,
-      user.getUser,
-      user.updateUser
+      commodities.updateCommodity
     ]
   },
   {
@@ -39,8 +39,15 @@ export default [
     route: '/delete/:id',
     handlers: [
       ensureUser,
-      user.getUser,
-      user.deleteUser
+      commodities.deleteCommodity
     ]
-  }
+  },
+  {
+    method: 'POST',
+    route: '/delete/multi',
+    handlers: [
+      ensureUser,
+      commodities.deleteMultiCommodities
+    ]
+  },
 ]

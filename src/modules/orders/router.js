@@ -1,28 +1,29 @@
 import { ensureUser } from '../../middleware/validators'
-import * as user from './controller'
+import * as orders from './controller'
 
-export const baseUrl = '/users'
+export const baseUrl = '/orders'
 
 export default [
   {
     method: 'POST',
     route: '/create',
     handlers: [
-      user.createUser
+      ensureUser,
+      orders.createOrder
     ]
   },
   {
     method: 'GET',
     route: '/list',
     handlers: [
-      user.getUsers
+      orders.getOrders
     ]
   },
   {
     method: 'GET',
     route: '/read/:id',
     handlers: [
-      user.getUser
+      orders.readOrder
     ]
   },
   {
@@ -30,8 +31,7 @@ export default [
     route: '/update/:id',
     handlers: [
       ensureUser,
-      user.getUser,
-      user.updateUser
+      orders.updateOrder
     ]
   },
   {
@@ -39,8 +39,7 @@ export default [
     route: '/delete/:id',
     handlers: [
       ensureUser,
-      user.getUser,
-      user.deleteUser
+      orders.deleteOrder
     ]
   }
 ]
