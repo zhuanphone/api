@@ -277,3 +277,93 @@ export async function deleteUser(ctx) {
   }
 
 }
+
+// 获取用户购物车
+export async function getUserCart(ctx) {
+  const user = ctx.state.user
+
+  try {
+    const userDoc = await User.findById(user._id).populate('cart')
+
+    ctx.body = {
+      status: 200,
+      result: userDoc.cart
+    }
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: error.message
+    }
+  }
+}
+
+// 更新商品至购物车，增加新的商品，删除商品，商品数加1， 商品数减1
+export async function addToCart(ctx) {
+  const user = ctx.state.user
+  console.log('ctx body: ', ctx.request.body)
+  const { goodId } = ctx.request.body
+
+  try {
+    const userDoc = await User.findById(user._id).populate('cart')
+
+    const index = userDoc.cart ? userDoc.cart.findIndex(item => item.goodId === goodId) : -1
+
+    if (index >= 0) {
+      userDoc.cart[index].count += 1
+    } else {
+      userDoc.cart = []
+      userDoc.cart.push({ goodId, count: 1 })
+    }
+
+    await userDoc.save()
+
+    ctx.body = {
+      status: 201,
+      message: 'Add to cart success!'
+    }
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: error.message
+    }
+  }
+}
+
+export async function removeFromCart() {
+  const user = ctx.state.user
+  const { goodId } = ctx.body
+
+  try {
+    const userDoc = await User.findById(user._id).populate('cart')
+    const index = userDoc.cart.findIndex(item => item.goodId === goodId)
+    userDoc.cart.splice(index, 1)
+    await userDoc.save()
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: error.message
+    }
+  }
+}
+
+export async function updateCartItem() {
+  const user = ctx.state.user
+  const { goodId, count } = ctx.state.body
+
+  try {
+    const user = await User.findById(user._id).populate('cart')
+    const index = user.cart.findIndex(item => item.id === goodId)
+    user.cart[index].count = count
+
+    await user.save()
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: error.message
+    }
+  }
+}

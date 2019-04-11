@@ -3,7 +3,7 @@ export const UserRoles = {
   USER: 'USER'
 }
 
-export const CommodityStatusMap = {
+export const GoodStatusMap = {
   WILLSHELVES: 'WILLSHELVES',
   ONSHELVES: 'ONSHELVES',
   OBTAINED: "OBTAINED"

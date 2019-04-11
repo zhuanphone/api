@@ -3,8 +3,8 @@ const Schema = mongoose.Schema
 import shortid from 'shortid'
 import { OrderStatusMap } from '../utils/const'
 
-const OrderCommodity = new Schema({
-  commodityId: { type: String, ref: 'commodity' },
+const OrderGood = new Schema({
+  goodId: { type: String, ref: 'good' },
   count: { type: Number, default: 1 }
 })
 
@@ -12,7 +12,7 @@ const OrderCommodity = new Schema({
 const Order = new Schema({
   _id: { type: String, default: shortid.generate },
   userId: { type: String, ref: 'user' },   // 用户手机
-  commodities: [OrderCommodity],
+  goods: [OrderGood],
   created: { type: Date, default: Date.now },
   amount: { type: String }, // 订单总金额
   cmdCount: { type: Number, default: 1 }, // 订单含有商品总数量

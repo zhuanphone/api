@@ -42,5 +42,32 @@ export default [
       user.getUser,
       user.deleteUser
     ]
+  },
+
+  // 对用户购物车的操作
+  {
+    method: 'GET',
+    route: '/cart/list',
+    handlers: [
+      ensureUser,
+      user.getUserCart
+    ]
+  },
+
+  {
+    method: 'POST',
+    route: '/cart/add',
+    handlers: [
+      ensureUser,
+      user.addToCart
+    ]
+  },
+  {
+    method: 'POST',
+    route: '/cart/remove',
+    handlers: [
+      ensureUser,
+      user.removeFromCart
+    ]
   }
 ]

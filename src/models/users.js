@@ -5,13 +5,19 @@ import jwt from 'jsonwebtoken'
 import shortid from 'shortid'
 import { UserRoles } from '../utils/const'
 
+const CartItem = new mongoose.Schema({
+  goodId: { type: String, ref: 'good' },
+  count: { type: Number, default: 0 }
+})
+
 const User = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   role: { type: String, default: UserRoles.USER }, // ADMIN, USER
   name: { type: String },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  address: [{ type: String }] // 地址管理
+  address: [{ type: String }], // 地址管理
+  cart: [CartItem]  // 购物车
 }, { versionKey: false })
 
 User.pre('save', function preSave(next) {

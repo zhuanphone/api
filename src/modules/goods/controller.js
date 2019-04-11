@@ -1,7 +1,7 @@
-import Commodity from '../../models/commodity'
+import Good from '../../models/good'
 import { qiniuUrl } from '../../utils/const';
 
-export async function listCommodities(ctx) {
+export async function listGoods(ctx) {
   let { page, limit, keyword, sort } = ctx.request.query
   page = Number(page) || 1
   limit = Number(limit) || 10
@@ -11,8 +11,8 @@ export async function listCommodities(ctx) {
   if (keyword) query['name'] = { $regex: keyword }
 
   try {
-    const total = await Commodity.count({})
-    const commodities = await Commodity
+    const total = await Good.count({})
+    const goods = await Good
       .find(query)
       .skip((page - 1) * limit)
       .limit(limit)
@@ -20,7 +20,7 @@ export async function listCommodities(ctx) {
 
     ctx.body = {
       status: 200,
-      result: { pagination: { total, limit }, list: commodities }
+      result: { pagination: { total, limit }, list: goods }
     }
   } catch (err) {
     ctx.status = 500
@@ -31,16 +31,16 @@ export async function listCommodities(ctx) {
   }
 }
 
-export async function createCommodity(ctx) {
-  const commodity = new Commodity(ctx.request.body)
+export async function createGood(ctx) {
+  const good = new Good(ctx.request.body)
 
   try {
-    await commodity.save()
-    const response = commodity.toJSON()
+    await good.save()
+    const response = good.toJSON()
 
     ctx.body = {
       status: 201,
-      message: 'Create Commodity Success',
+      message: 'Create Good Success',
       result: response
     }
   } catch (err) {
@@ -52,16 +52,16 @@ export async function createCommodity(ctx) {
   }
 }
 
-export async function readCommodity(ctx, next) {
+export async function readGood(ctx, next) {
   try {
-    const result = await Commodity
+    const result = await Good
       .findById(ctx.params.id)
 
     if (!result) {
       ctx.status = 404
       ctx.body = {
         status: 404,
-        message: "Commodity Not Found!"
+        message: "Good Not Found!"
       }
     }
 
@@ -81,17 +81,17 @@ export async function readCommodity(ctx, next) {
   if (next) { return next() }
 }
 
-export async function updateCommodity(ctx) {
+export async function updateGood(ctx) {
   const { id } = ctx.params
   console.log('update id: ', id)
   const updated = ctx.request.body
 
   try {
-    await Commodity.update({ _id: id }, updated)
+    await Good.update({ _id: id }, updated)
     ctx.status = 201
     ctx.body = {
       status: 201,
-      message: 'Update Commodity Success!'
+      message: 'Update Good Success!'
     }
   } catch (error) {
     ctx.status = 500
@@ -102,10 +102,10 @@ export async function updateCommodity(ctx) {
   }
 }
 
-export async function deleteCommodity(ctx) {
+export async function deleteGood(ctx) {
   const { id } = ctx.params
   try {
-    await Commodity.remove({ _id: id })
+    await Good.remove({ _id: id })
     ctx.body = {
       status: 200,
       message: 'Delete Success'
@@ -123,10 +123,10 @@ export async function deleteCommodity(ctx) {
  * 
  * @param request.body {ids: [_id1, _id2]}
  */
-export async function deleteMultiCommodities(ctx) {
+export async function deleteMultiGoods(ctx) {
   const { ids } = ctx.request.body
   try {
-    await Commodity.remove({ _id: { $in: ids } })
+    await Good.remove({ _id: { $in: ids } })
     ctx.body = {
       status: 200,
       message: 'Delete Success'

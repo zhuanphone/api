@@ -1,7 +1,7 @@
 import { ensureUser } from '../../middleware/validators'
-import * as commodities from './controller'
+import * as goods from './controller'
 
-export const baseUrl = '/commodities'
+export const baseUrl = '/goods'
 
 export default [
   {
@@ -9,21 +9,21 @@ export default [
     route: '/create',
     handlers: [
       ensureUser,
-      commodities.createCommodity
+      goods.createGood
     ]
   },
   {
     method: 'GET',
     route: '/list',
     handlers: [
-      commodities.listCommodities
+      goods.listGoods
     ]
   },
   {
     method: 'GET',
     route: '/read/:id',
     handlers: [
-      commodities.readCommodity
+      goods.readGood
     ]
   },
   {
@@ -31,7 +31,7 @@ export default [
     route: '/update/:id',
     handlers: [
       ensureUser,
-      commodities.updateCommodity
+      goods.updateGood
     ]
   },
   {
@@ -39,7 +39,7 @@ export default [
     route: '/delete/:id',
     handlers: [
       ensureUser,
-      commodities.deleteCommodity
+      goods.deleteGood
     ]
   },
   {
@@ -47,7 +47,7 @@ export default [
     route: '/delete/multi',
     handlers: [
       ensureUser,
-      commodities.deleteMultiCommodities
+      goods.deleteMultiGoods
     ]
   },
 ]
