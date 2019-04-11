@@ -1,4 +1,7 @@
 import User from '../../models/users'
+import config from '../../../config'
+import { getToken } from '../../utils/auth';
+import { verify } from 'jsonwebtoken'
 
 /**
  * @api {post} /users Create a new user
@@ -117,6 +120,52 @@ export async function getUsers(ctx) {
     ctx.body = {
       status: 500,
       message: err.message
+    }
+  }
+}
+
+export async function getCurrent(ctx) {
+  const token = getToken(ctx)
+  if (!token) {
+    ctx.status = 401
+    ctx.body = {
+      status: 401,
+      message: "Unauthorized: 无权限"
+    }
+    return
+  }
+
+  let decoded = null
+  try {
+    decoded = verify(token, config.token)
+  } catch (err) {
+    ctx.status = 403
+    ctx.body = {
+      status: 403,
+      message: "Forbidden: Token过期"
+    }
+    return
+  }
+
+  try {
+    const user = await User.findById(decoded.id, '-password')
+    if (!user) {
+      ctx.status = 401
+      ctx.body = {
+        status: 401,
+        message: "Token无效"
+      }
+    } else {
+      ctx.body = {
+        status: 200,
+        result: user
+      }
+    }
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      status: 500,
+      message: error.message
     }
   }
 }
@@ -301,7 +350,6 @@ export async function getUserCart(ctx) {
 // 更新商品至购物车，增加新的商品，删除商品，商品数加1， 商品数减1
 export async function addToCart(ctx) {
   const user = ctx.state.user
-  console.log('ctx body: ', ctx.request.body)
   const { goodId } = ctx.request.body
 
   try {

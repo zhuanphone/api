@@ -83,7 +83,6 @@ export async function readGood(ctx, next) {
 
 export async function updateGood(ctx) {
   const { id } = ctx.params
-  console.log('update id: ', id)
   const updated = ctx.request.body
 
   try {
