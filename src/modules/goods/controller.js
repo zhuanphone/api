@@ -1,4 +1,5 @@
 import Good from '../../models/good'
+import Order from '../../models/order'
 import { qiniuUrl } from '../../utils/const';
 
 export async function listGoods(ctx) {
@@ -54,8 +55,23 @@ export async function createGood(ctx) {
 
 export async function readGood(ctx, next) {
   try {
+    const goodId = ctx.params.id
     const result = await Good
-      .findById(ctx.params.id)
+      .findById(goodId).lean()
+
+    // 找到所有订单中该商品
+    const releatedOrders = await Order.find({ "goods.goodId": goodId }).lean()
+
+    let total = 0
+    releatedOrders.forEach(order => {
+      const count = order.goods.filter(good => good.goodId === goodId).reduce(function (ret, cur) {
+        return ret + cur.count
+      }, 0)
+      total += count
+    })
+
+    result.saleCount = total
+    console.log('result: ', result);
 
     if (!result) {
       ctx.status = 404

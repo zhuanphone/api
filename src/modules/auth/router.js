@@ -15,7 +15,7 @@ export default [
     method: 'POST',
     route: '/register',
     handlers: [
-      users.createUser
+      auth.register
     ]
   },
   {

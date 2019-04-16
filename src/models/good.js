@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import shortid from 'shortid'
 import { GoodStatusMap } from '../utils/const'
+import Order from './order'
 
 const GoodImg = new mongoose.Schema({
   uid: { type: String },
@@ -20,7 +21,9 @@ const Good = new mongoose.Schema({
   originPrice: { type: Number, default: 100 },
   purchasePrice: { type: Number, default: 100 },
   onShelve: { type: String, default: GoodStatusMap.WILLSHELVES }, // 待上架：0, will_shelves | 1, 已上架on_shelves | -1,  已下架down_shelves
-  saleCount: { type: Number, default: 0 }
-}, { versionKey: false })
+}, {
+    versionKey: false,
+  })
+
 
 export default mongoose.model('good', Good)

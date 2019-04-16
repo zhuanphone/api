@@ -1,5 +1,7 @@
 import Order from '../../models/order'
-
+import shortid from 'shortid'
+import qs from 'qs'
+import { genSerialNum, signature, sign, sortByObjectKey } from '../../utils/common';
 
 export async function getOrders(ctx) {
   let { page, limit, keyword, sort } = ctx.request.query
@@ -31,7 +33,27 @@ export async function getOrders(ctx) {
 }
 
 export async function createOrder(ctx) {
+  const user = ctx.state.user
   const order = new Order(ctx.request.body)
+  // 生成订单唯一数字编号
+  const serialNum = genSerialNum(user.id || 'xxxx')
+  order.serialNum = serialNum
+
+  // 返回收银台跳转地址
+  const mchid = '1532210401'
+  const key = 'nSXUfa4m1Tf01yrf'
+
+  const data = {
+    body: '测试订单',
+    callback_url: 'http://www.zhuanzhuancn.com:4000',
+    mchid,
+    out_trade_no: serialNum,
+    total_fee: 1
+  }
+
+  data.sign = signature(data, key)
+
+  const payurl = 'https://payjs.cn/api/cashier?' + qs.stringify(data, { encode: false })
 
   try {
     await order.save()
@@ -40,13 +62,16 @@ export async function createOrder(ctx) {
     ctx.status = 201
     ctx.body = {
       status: 201,
-      result: response
+      result: {
+        order: response,
+        payurl
+      }
     }
   } catch (err) {
     ctx.status = 500
     ctx.body = {
       status: 500,
-      result: error.message
+      result: err.message
     }
   }
 }

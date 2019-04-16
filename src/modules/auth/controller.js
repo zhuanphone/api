@@ -1,4 +1,5 @@
 import passport from 'koa-passport'
+import User from '../../models/users'
 import qiniu from 'qiniu'
 import { qiniuUrl } from '../../utils/const';
 
@@ -79,8 +80,83 @@ export async function login(ctx, next) {
   })(ctx, next)
 }
 
-export async function regist(ctx, next) {
-  return
+// 注册
+// phone, password, duplicatePass
+export async function register(ctx) {
+  const { username, password, duplicatePass, phone } = ctx.request.body
+
+  if (!username) {
+    ctx.body = 501
+    ctx.body = {
+      status: 501,
+      message: '手机号不能为空'
+    }
+    return
+  }
+
+  if (!password) {
+    ctx.body = 501
+    ctx.body = {
+      status: 501,
+      message: '密码不能为空'
+    }
+    return
+  }
+  if (!duplicatePass) {
+    ctx.body = 501
+    ctx.body = {
+      status: 501,
+      message: '验证密码不能为空'
+    }
+    return
+  }
+  if (password !== duplicatePass) {
+    ctx.body = 501
+    ctx.body = {
+      status: 501,
+      message: '两次输入密码不一致'
+    }
+    return
+  }
+
+  const existUser = User.findOne({ username: username })
+  console.log('existUser: ', existUser);
+
+  if (existUser) {
+    ctx.body = 501
+    ctx.body = {
+      status: 501,
+      message: '该用户已存在！'
+    }
+    return
+  }
+
+  const user = new User({ username, phone, password })
+
+  try {
+    await user.save()
+
+    const token = user.generateToken()
+    const response = user.toJSON()
+
+    delete response.password
+
+    ctx.body = {
+      status: 201,
+      message: '注册成功！',
+      result: {
+        user: response,
+        token
+      }
+    }
+  } catch (err) {
+    ctx.status = 422
+    ctx.body = {
+      status: 422,
+      message: err.message
+    }
+  }
+
 }
 
 export function createQiniuToken(ctx) {

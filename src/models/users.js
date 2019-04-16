@@ -13,8 +13,9 @@ const CartItem = new mongoose.Schema({
 const User = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   role: { type: String, default: UserRoles.USER }, // ADMIN, USER
-  name: { type: String },
-  username: { type: String, required: true, unique: true },
+  nickname: { type: String }, // 昵称
+  phone: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true }, // 用户名就是手机号
   password: { type: String, required: true },
   address: [{ type: String }], // 地址管理
   cart: [CartItem]  // 购物车
