@@ -19,5 +19,3 @@ export const OrderStatusMap = {
   PAIDED: 'PAIDED',
   PAIDFAIL: 'PAIDFAIL'
 }
-
-export const qiniuUrl = 'ppo50tge9.bkt.clouddn.com'

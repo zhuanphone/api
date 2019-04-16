@@ -1,7 +1,6 @@
 import passport from "koa-passport";
 import User from "../../models/users";
 import qiniu, { conf } from "qiniu";
-import { qiniuUrl } from "../../utils/const";
 import config from "../../../config";
 
 /**
@@ -162,6 +161,7 @@ export async function register(ctx) {
 export function createQiniuToken(ctx) {
   const accessKey = config.qiniu.ak;
   const secretKey = config.qiniu.sk;
+  const domain = config.qiniu.domain;
   const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
 
   const options = {
@@ -176,7 +176,7 @@ export function createQiniuToken(ctx) {
     status: 201,
     result: {
       token: uploadToken,
-      domain: qiniuUrl
+      domain
     }
   };
 }
