@@ -49,8 +49,8 @@ export async function createOrder(ctx) {
     callback_url: 'http://www.zhuanzhuancn.com:4000/paysuc',
     mchid,
     out_trade_no: serialNum,
-    // total_fee: order.amount * 100
-    total_fee: 1
+    total_fee: order.amount * 100
+    // total_fee: 1
   }
 
   data.sign = signature(data, key)
