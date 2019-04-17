@@ -355,7 +355,7 @@ export async function addToCart(ctx) {
   try {
     const userDoc = await User.findById(user._id).populate('cart')
 
-    const index = userDoc.cart ? userDoc.cart.findIndex(item => item.goodId === goodId) : -1
+    const index = userDoc.cart ? userDoc.cart.findIndex(item => item.id === goodId) : -1
 
     if (index >= 0) {
       userDoc.cart[index].count += 1
@@ -385,7 +385,7 @@ export async function removeFromCart() {
 
   try {
     const userDoc = await User.findById(user._id).populate('cart')
-    const index = userDoc.cart.findIndex(item => item.goodId === goodId)
+    const index = userDoc.cart.findIndex(item => item.id === goodId)
     userDoc.cart.splice(index, 1)
     await userDoc.save()
   } catch (error) {

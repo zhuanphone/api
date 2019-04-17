@@ -8,7 +8,7 @@ export default [
     method: 'POST',
     route: '/create',
     handlers: [
-      ensureUser,
+      // ensureUser,
       orders.createOrder
     ]
   },
@@ -40,6 +40,13 @@ export default [
     handlers: [
       ensureUser,
       orders.deleteOrder
+    ]
+  },
+  {
+    method: 'POST',
+    route: '/weixin/notify',
+    handlers: [
+      orders.weixinNotify
     ]
   }
 ]

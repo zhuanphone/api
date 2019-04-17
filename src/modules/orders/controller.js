@@ -1,7 +1,7 @@
 import Order from '../../models/order'
 import shortid from 'shortid'
 import qs from 'qs'
-import { genSerialNum, signature, sign, sortByObjectKey } from '../../utils/common';
+import { signature, genSerialNumWithId } from '../../utils/common';
 
 export async function getOrders(ctx) {
   let { page, limit, keyword, sort } = ctx.request.query
@@ -33,10 +33,10 @@ export async function getOrders(ctx) {
 }
 
 export async function createOrder(ctx) {
-  const user = ctx.state.user
+  // const user = ctx.state.user
   const order = new Order(ctx.request.body)
   // 生成订单唯一数字编号
-  const serialNum = genSerialNum(user.id || 'xxxx')
+  const serialNum = genSerialNumWithId(order._id)
   order.serialNum = serialNum
 
   // 返回收银台跳转地址
@@ -44,10 +44,12 @@ export async function createOrder(ctx) {
   const key = 'nSXUfa4m1Tf01yrf'
 
   const data = {
-    body: '测试订单',
-    callback_url: 'http://www.zhuanzhuancn.com:4000',
+    body: `订单-${serialNum}`,
+    // notify_url: 'http://www.zhuanzhuancn.com:5000/api/v1/orders/weixin/notify',
+    callback_url: 'http://www.zhuanzhuancn.com:4000/paysuc',
     mchid,
     out_trade_no: serialNum,
+    // total_fee: order.amount * 100
     total_fee: 1
   }
 
@@ -74,6 +76,10 @@ export async function createOrder(ctx) {
       result: err.message
     }
   }
+}
+
+export async function weixinNotify() {
+
 }
 
 export async function updateOrder(ctx) {

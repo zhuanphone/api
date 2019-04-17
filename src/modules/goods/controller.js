@@ -60,11 +60,11 @@ export async function readGood(ctx, next) {
       .findById(goodId).lean()
 
     // 找到所有订单中该商品
-    const releatedOrders = await Order.find({ "goods.goodId": goodId }).lean()
+    const releatedOrders = await Order.find({ "goods.id": goodId }).lean()
 
     let total = 0
     releatedOrders.forEach(order => {
-      const count = order.goods.filter(good => good.goodId === goodId).reduce(function (ret, cur) {
+      const count = order.goods.filter(good => good.id === goodId).reduce(function (ret, cur) {
         return ret + cur.count
       }, 0)
       total += count

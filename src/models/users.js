@@ -6,7 +6,7 @@ import shortid from 'shortid'
 import { UserRoles } from '../utils/const'
 
 const CartItem = new mongoose.Schema({
-  goodId: { type: String, ref: 'good' },
+  id: { type: String, ref: 'good' },
   count: { type: Number, default: 0 }
 })
 
