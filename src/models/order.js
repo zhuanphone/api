@@ -12,6 +12,8 @@ const OrderGood = new Schema({
 const Order = new Schema({
   _id: { type: String, default: shortid.generate },
   serialNum: { type: String },
+  address: { type: String }, // 收货地址
+  phone: { type: Number }, // 收货人电话
   userId: { type: String, ref: 'user' },   // 用户手机
   goods: [OrderGood],
   created: { type: Date, default: Date.now },
