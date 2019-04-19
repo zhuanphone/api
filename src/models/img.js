@@ -11,7 +11,7 @@ const Img = new Schema({
 }, { versionKey: false })
 
 Img.virtual('url').get(function () {
-  return `http://${this.domain}/${thsi.hash}`
+  return `http://${this.domain}/${this.hash}`
 })
 
 export default mongoose.model('img', Img)

@@ -18,6 +18,13 @@ export async function listGoods(ctx) {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort(sort)
+      .lean()
+
+    goods.forEach(good => {
+      if (good.properties && good.properties !== '') {
+        good.properties = JSON.parse(good.properties)
+      }
+    })
 
     ctx.body = {
       status: 200,
@@ -33,7 +40,11 @@ export async function listGoods(ctx) {
 }
 
 export async function createGood(ctx) {
-  const good = new Good(ctx.request.body)
+
+  const goodInfo = ctx.request.body
+  const { properties, ...meta } = goodInfo
+
+  const good = new Good({ ...meta, properties: JSON.stringify(properties) })
 
   try {
     await good.save()
@@ -59,6 +70,10 @@ export async function readGood(ctx, next) {
     const result = await Good
       .findById(goodId).lean()
 
+    if (result.properties && result.properties !== '') {
+      result.properties = JSON.parse(result.properties)
+    }
+
     // 找到所有订单中该商品
     const releatedOrders = await Order.find({ "goods.id": goodId }).lean()
 
@@ -71,7 +86,6 @@ export async function readGood(ctx, next) {
     })
 
     result.saleCount = total
-    console.log('result: ', result);
 
     if (!result) {
       ctx.status = 404
