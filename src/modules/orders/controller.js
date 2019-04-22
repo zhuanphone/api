@@ -4,13 +4,13 @@ import qs from 'qs'
 import { signature, genSerialNumWithId } from '../../utils/common';
 
 export async function getOrders(ctx) {
-  let { page, limit, keyword, sort } = ctx.request.query
+  let { page, limit, sort } = ctx.request.query
   page = Number(page) || 1
   limit = Number(limit) || 10
-  sort = sort || '-created'
+  sort = sort || '-createdAt'
 
   let query = {}
-  if (keyword) query['name'] = { $regex: keyword }
+  // if (keyword) query['name'] = { $regex: keyword }
 
   try {
     const total = await Order.count({})
@@ -19,7 +19,7 @@ export async function getOrders(ctx) {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort(sort)
-      .populate({ path: 'goods.good' })
+      .populate({ path: 'releatedGoods.good' })
       .lean()
 
     ctx.body = {
@@ -52,7 +52,7 @@ export async function createOrder(ctx) {
     callback_url: 'http://www.zhuanzhuancn.com:4000/paysuc',
     mchid,
     out_trade_no: serialNum,
-    total_fee: order.amount * 100
+    total_fee: order.total * 100
     // total_fee: 1
   }
 
@@ -79,10 +79,6 @@ export async function createOrder(ctx) {
       result: err.message
     }
   }
-}
-
-export async function weixinNotify() {
-
 }
 
 export async function updateOrder(ctx) {

@@ -115,6 +115,10 @@ export async function updateGood(ctx) {
   const { id } = ctx.params
   const updated = ctx.request.body
 
+  if (updated.properties && typeof updated.properties === 'object') {
+    updated.properties = JSON.stringify(updated.properties)
+  }
+
   try {
     await Good.update({ _id: id }, updated)
     ctx.status = 201
