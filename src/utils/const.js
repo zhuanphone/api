@@ -14,7 +14,7 @@ export const NoticeStatusMap = {
   EXPIRED: 'EXPIRED'
 }
 
-export const OrderStatusMap = {
+export const PaymentState = {
   BEPAID: 'BEPAID',
   PAIDED: 'PAIDED',
   PAIDFAIL: 'PAIDFAIL'

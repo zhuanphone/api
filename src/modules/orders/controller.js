@@ -19,6 +19,9 @@ export async function getOrders(ctx) {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort(sort)
+      .populate({ path: 'goods.good' })
+      .lean()
+
     ctx.body = {
       status: 200,
       result: { pagination: { total, limit }, list: orders }
